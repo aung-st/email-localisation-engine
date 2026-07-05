@@ -1,5 +1,5 @@
-import type { TranslationRequest, TranslationResponse } from './types.ts'
+import type { TranslationRequest, TranslationResponse } from './types'
 
 export interface LocalisationEngine {
-  translateText(request: TranslationRequest): Promise<TranslationResponse>
+    translateText(request: TranslationRequest): Promise<TranslationResponse>
 }

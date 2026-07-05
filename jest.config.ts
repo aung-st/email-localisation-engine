@@ -6,7 +6,7 @@ const config: Config = {
     coverageDirectory: 'coverage',
 
     moduleNameMapper: {
-      '^(\\.{1,2}/.*)\\.ts$': '$1',
+        '^(\\.{1,2}/.*)\\.ts$': '$1',
     },
 
     testEnvironment: 'node',
@@ -14,13 +14,13 @@ const config: Config = {
     setupFiles: ['dotenv/config'],
 
     transform: {
-      '^.+\\.tsx?$': [
-        'ts-jest',
-        {
-          tsconfig: 'tsconfig.test.json',
-          useESM: true,
-        },
-      ],
+        '^.+\\.tsx?$': [
+            'ts-jest',
+            {
+                tsconfig: 'tsconfig.test.json',
+                useESM: true,
+            },
+        ],
     },
 }
 

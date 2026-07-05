@@ -1,19 +1,19 @@
 .modal-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 1000;
-  background-color: rgba(0, 0, 0, 0.7);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .modal-content {
-  background: #fff;
-  border-radius: 8px;
-  padding: 24px;
-  width: 90%;
-  max-width: 660px;
-  max-height: 90vh;
-  overflow: auto;
+    background: #fff;
+    border-radius: 8px;
+    padding: 24px;
+    width: 90%;
+    max-width: 660px;
+    max-height: 90vh;
+    overflow: auto;
 }

@@ -5,10 +5,10 @@ const baseUrl = import.meta.env.VITE_BASE_URL
 const factory = new LibreTranslateFactory()
 
 export async function translate(
-  text: string,
-  sourceLanguage: string,
-  targetLanguage: string,
+    text: string,
+    sourceLanguage: string,
+    targetLanguage: string
 ): Promise<TranslationResponse> {
-  const engine = factory.buildEngine({ engine: 'LibreTranslate', baseUrl })
-  return engine.translateText({ text, sourceLanguage, targetLanguage })
+    const engine = factory.buildEngine({ engine: 'LibreTranslate', baseUrl })
+    return engine.translateText({ text, sourceLanguage, targetLanguage })
 }
