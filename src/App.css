@@ -145,7 +145,7 @@ section {
     margin-top: 24px;
 }
 
-[role="alert"] {
+[role='alert'] {
     color: var(--accent);
     padding: 16px 24px;
     border: 1px solid var(--accent);

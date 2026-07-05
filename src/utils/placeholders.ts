@@ -1,6 +1,7 @@
-export function extractPlaceholders(
-    text: string,
-): { scrubbed: string; map: Map<string, string> } {
+export function extractPlaceholders(text: string): {
+    scrubbed: string
+    map: Map<string, string>
+} {
     // Captures {{variable}} merge tags and https:// URLs so they survive
     // translation. Each match is replaced with a UUID placeholder, then
     // restored after the engine translates the scrubbed text.
@@ -16,7 +17,7 @@ export function extractPlaceholders(
 
 export function restorePlaceholders(
     text: string,
-    map: Map<string, string>,
+    map: Map<string, string>
 ): string {
     for (const [ph, original] of map) {
         text = text.split(ph).join(original)

@@ -11,7 +11,7 @@ describe('placeholders', () => {
 
             expect(scrubbed).not.toContain('{{name}}')
             expect(scrubbed).toMatch(
-                /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/,
+                /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/
             )
             expect(map.size).toBe(1)
             expect(map.values().next().value).toBe('{{name}}')
@@ -19,7 +19,7 @@ describe('placeholders', () => {
 
         it('replaces URLs with a UUID', () => {
             const { scrubbed, map } = extractPlaceholders(
-                'visit https://example.com/help',
+                'visit https://example.com/help'
             )
 
             expect(scrubbed).not.toContain('https://example.com/help')
@@ -29,7 +29,7 @@ describe('placeholders', () => {
 
         it('replaces both {{variable}} and URLs', () => {
             const { map } = extractPlaceholders(
-                '{{name}} at https://example.com',
+                '{{name}} at https://example.com'
             )
 
             expect(map.size).toBe(2)
@@ -39,9 +39,7 @@ describe('placeholders', () => {
         })
 
         it('strips trailing punctuation from URLs', () => {
-            const { map } = extractPlaceholders(
-                'see https://example.com.',
-            )
+            const { map } = extractPlaceholders('see https://example.com.')
 
             const url = Array.from(map.values())[0]
             expect(url).toBe('https://example.com')
@@ -49,9 +47,7 @@ describe('placeholders', () => {
         })
 
         it('strips trailing comma from URLs', () => {
-            const { map } = extractPlaceholders(
-                'visit https://example.com, ok',
-            )
+            const { map } = extractPlaceholders('visit https://example.com, ok')
 
             const url = Array.from(map.values())[0]
             expect(url).toBe('https://example.com')
@@ -84,7 +80,7 @@ describe('placeholders', () => {
 
         it('restores URLs from UUID placeholders', () => {
             const { scrubbed, map } = extractPlaceholders(
-                'visit https://example.com',
+                'visit https://example.com'
             )
 
             const restored = restorePlaceholders(scrubbed, map)
@@ -94,7 +90,7 @@ describe('placeholders', () => {
 
         it('restores both {{variable}} and URLs', () => {
             const { scrubbed, map } = extractPlaceholders(
-                '{{name}} at https://example.com',
+                '{{name}} at https://example.com'
             )
 
             const restored = restorePlaceholders(scrubbed, map)
@@ -111,9 +107,7 @@ describe('placeholders', () => {
         })
 
         it('preserves $ in original values when restoring', () => {
-            const { scrubbed, map } = extractPlaceholders(
-                'Hello {{$name}}',
-            )
+            const { scrubbed, map } = extractPlaceholders('Hello {{$name}}')
 
             const restored = restorePlaceholders(scrubbed, map)
 
@@ -121,9 +115,7 @@ describe('placeholders', () => {
         })
 
         it('preserves $& in original values when restoring', () => {
-            const { scrubbed, map } = extractPlaceholders(
-                '{{$&}}',
-            )
+            const { scrubbed, map } = extractPlaceholders('{{$&}}')
 
             const restored = restorePlaceholders(scrubbed, map)
 
@@ -132,7 +124,7 @@ describe('placeholders', () => {
 
         it('restores multiple {{variable}} tags in order', () => {
             const { scrubbed, map } = extractPlaceholders(
-                '{{first}} {{second}} {{third}}',
+                '{{first}} {{second}} {{third}}'
             )
 
             const restored = restorePlaceholders(scrubbed, map)

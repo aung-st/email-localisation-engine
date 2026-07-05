@@ -28,68 +28,78 @@ describe('parseFile', () => {
     describe('json', () => {
         it('extracts string values from a flat object', async () => {
             const result = await parseFile(
-                makeFile(JSON.stringify({ a: 'hello', b: 'world' }), 'data.json'),
+                makeFile(
+                    JSON.stringify({ a: 'hello', b: 'world' }),
+                    'data.json'
+                )
             )
             expect(result).toBe('hello\nworld')
         })
 
         it('walks nested objects', async () => {
             const result = await parseFile(
-                makeFile(JSON.stringify({ a: { b: { c: 'deep' } } }), 'data.json'),
+                makeFile(
+                    JSON.stringify({ a: { b: { c: 'deep' } } }),
+                    'data.json'
+                )
             )
             expect(result).toBe('deep')
         })
 
         it('handles arrays of strings', async () => {
             const result = await parseFile(
-                makeFile(JSON.stringify(['a', 'b', 'c']), 'data.json'),
+                makeFile(JSON.stringify(['a', 'b', 'c']), 'data.json')
             )
             expect(result).toBe('a\nb\nc')
         })
 
         it('handles mixed nested structures', async () => {
             const result = await parseFile(
-                makeFile(JSON.stringify({ a: ['x', { y: 'z' }] }), 'data.json'),
+                makeFile(JSON.stringify({ a: ['x', { y: 'z' }] }), 'data.json')
             )
             expect(result).toBe('x\nz')
         })
 
         it('handles arrays nested inside arrays', async () => {
             const result = await parseFile(
-                makeFile(JSON.stringify([['a', 'b'], ['c']]), 'data.json'),
+                makeFile(JSON.stringify([['a', 'b'], ['c']]), 'data.json')
             )
             expect(result).toBe('a\nb\nc')
         })
 
         it('returns empty string when no strings exist', async () => {
             const result = await parseFile(
-                makeFile(JSON.stringify({ a: 1, b: null }), 'data.json'),
+                makeFile(JSON.stringify({ a: 1, b: null }), 'data.json')
             )
             expect(result).toBe('')
         })
 
         it('throws on invalid JSON', async () => {
             await expect(
-                parseFile(makeFile('not json', 'data.json')),
+                parseFile(makeFile('not json', 'data.json'))
             ).rejects.toThrow()
         })
     })
 
     describe('csv', () => {
         it('skips header row and first column of data rows', async () => {
-            const result = await parseFile(makeFile('section,text\na,b\nc,d', 'data.csv'))
+            const result = await parseFile(
+                makeFile('section,text\na,b\nc,d', 'data.csv')
+            )
             expect(result).toBe('b\nd')
         })
 
         it('handles quoted fields with commas', async () => {
             const result = await parseFile(
-                makeFile('header\nkey,"hello, world",foo', 'data.csv'),
+                makeFile('header\nkey,"hello, world",foo', 'data.csv')
             )
             expect(result).toBe('hello, world | foo')
         })
 
         it('handles empty fields after the first column', async () => {
-            const result = await parseFile(makeFile('h1,h2,h3\nkey,bar,', 'data.csv'))
+            const result = await parseFile(
+                makeFile('h1,h2,h3\nkey,bar,', 'data.csv')
+            )
             expect(result).toBe('bar | ')
         })
 
@@ -119,7 +129,7 @@ describe('parseFile', () => {
             mockExtractRawText.mockRejectedValue(new Error('corrupted file'))
 
             await expect(
-                parseFile(makeFile('garbage', 'bad.docx')),
+                parseFile(makeFile('garbage', 'bad.docx'))
             ).rejects.toThrow('corrupted file')
         })
     })
@@ -127,13 +137,13 @@ describe('parseFile', () => {
     describe('unsupported files', () => {
         it('throws for unsupported extension', async () => {
             await expect(
-                parseFile(makeFile('content', 'file.xyz')),
+                parseFile(makeFile('content', 'file.xyz'))
             ).rejects.toThrow('Unsupported file type: .xyz')
         })
 
         it('throws when file has no extension', async () => {
             await expect(
-                parseFile(makeFile('content', 'README')),
+                parseFile(makeFile('content', 'README'))
             ).rejects.toThrow('File has no extension')
         })
     })

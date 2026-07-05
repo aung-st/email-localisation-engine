@@ -8,7 +8,7 @@ const factory = new LibreTranslateFactory()
 export async function translate(
     text: string,
     sourceLanguage: string,
-    targetLanguage: string,
+    targetLanguage: string
 ): Promise<TranslationResponse> {
     const { scrubbed, map } = extractPlaceholders(text)
 
