@@ -13,7 +13,7 @@ import { TranslationResult } from './TranslationResult'
 
 export function TranslationForm() {
     const [text, setText] = useState('')
-    const [sourceLanguage, setSourceLanguage] = useState('en')
+    const [sourceLanguage] = useState('en')
     const [targetLanguage, setTargetLanguage] = useState('es')
     const [result, setResult] = useState<TranslationResponse | null>(null)
     const [error, setError] = useState('')
@@ -53,9 +53,7 @@ export function TranslationForm() {
                         />
 
                         <LanguageSelect
-                            sourceLanguage={sourceLanguage}
                             targetLanguage={targetLanguage}
-                            onSourceChange={setSourceLanguage}
                             onTargetChange={setTargetLanguage}
                             loading={loading}
                             hasText={text.length > 0}
