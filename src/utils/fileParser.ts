@@ -31,9 +31,17 @@ function parseCsv(raw: string): string {
     let current = ''
     let inQuotes = false
 
-    for (const ch of normalised) {
+    for (let i = 0; i < normalised.length; i++) {
+        const ch = normalised[i]
+        const nextCh = normalised[i + 1]
+
         if (ch === '"') {
-            inQuotes = !inQuotes
+            if (inQuotes && nextCh === '"') {
+                current += '"'
+                i++
+            } else {
+                inQuotes = !inQuotes
+            }
         } else if (ch === ',' && !inQuotes) {
             fields.push(current)
             current = ''
@@ -48,6 +56,7 @@ function parseCsv(raw: string): string {
             current += ch
         }
     }
+
     fields.push(current)
     if (fields.some((f) => f.length > 0)) {
         rows.push(fields)

@@ -96,6 +96,25 @@ describe('parseFile', () => {
             expect(result).toBe('hello, world | foo')
         })
 
+        it('strips enclosing quotes from parsed field values', async () => {
+            const result = await parseFile(
+                makeFile('header1,header2\nkey,"hello"', 'data.csv')
+            )
+            // Ensures the surrounding quotes are not included in the output string
+            expect(result).toBe('hello')
+        })
+
+        it('handles escaped double quotes within a quoted field', async () => {
+            const result = await parseFile(
+                makeFile(
+                    'header1,header2\nkey,"She said ""Hello"""',
+                    'data.csv'
+                )
+            )
+            // Ensures "" is correctly collapsed into a single literal "
+            expect(result).toBe('She said "Hello"')
+        })
+
         it('handles empty fields after the first column', async () => {
             const result = await parseFile(
                 makeFile('h1,h2,h3\nkey,bar,', 'data.csv')
