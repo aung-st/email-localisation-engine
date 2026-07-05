@@ -8,7 +8,7 @@ import {
 } from '@jest/globals'
 import { post } from '../../utils/apiClient'
 
-const baseUrl = process.env.BASE_URL as string
+const baseUrl = process.env.VITE_BASE_URL as string
 
 let mockFetch: jest.SpiedFunction<typeof globalThis.fetch>
 

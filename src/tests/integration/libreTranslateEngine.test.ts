@@ -1,7 +1,7 @@
 import { describe, it, expect } from '@jest/globals'
 import { LibreTranslateFactory } from '../../services/libreTranslateFactory'
 
-const baseUrl = process.env.BASE_URL as string
+const baseUrl = process.env.VITE_BASE_URL as string
 
 describe('LibreTranslateEngine (integration)', () => {
     it('translates "hello" from English to Spanish', async () => {
