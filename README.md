@@ -42,6 +42,7 @@ Requires a running [LibreTranslate](https://libretranslate.com/) instance. Set `
 Development assisted by [opencode](https://opencode.ai) for tasks such as layout changes, generating test cases, and drafting the initial factory pattern.
 
 [Gemini](https://gemini.google.com) for rubber duck debugging.
+
 ## What could be improved with more time
 
 - **Other localisation engines** — the factory pattern supports it; only needs a `DeepLTranslateEngine` and `DeepLTranslateFactory` for example
@@ -53,4 +54,5 @@ Development assisted by [opencode](https://opencode.ai) for tasks such as layout
 And more.
 
 ## My thought process
+
 [View the process documentation](docs/process.md)

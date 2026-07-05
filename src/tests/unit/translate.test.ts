@@ -1,7 +1,7 @@
 import { describe, it, expect, jest } from '@jest/globals'
 import {
     extractToTemplate,
-    translateWithPreservation
+    translateWithPreservation,
 } from '../../utils/placeholders'
 
 describe('placeholders keyed-tokenization', () => {
@@ -11,44 +11,52 @@ describe('placeholders keyed-tokenization', () => {
 
             expect(template).toBe('Hello __{0}__')
             expect(dictionary).toEqual({
-                '__{0}__': '{{name}}'
+                '__{0}__': '{{name}}',
             })
         })
 
         it('identifies and isolates URLs into a tracking dictionary', () => {
-            const { template, dictionary } = extractToTemplate('visit https://example.com/help')
+            const { template, dictionary } = extractToTemplate(
+                'visit https://example.com/help'
+            )
 
             expect(template).toBe('visit __{0}__')
             expect(dictionary).toEqual({
-                '__{0}__': 'https://example.com/help'
+                '__{0}__': 'https://example.com/help',
             })
         })
 
         it('extracts both {{variable}} and URLs sequentially', () => {
-            const { template, dictionary } = extractToTemplate('{{name}} at https://example.com')
+            const { template, dictionary } = extractToTemplate(
+                '{{name}} at https://example.com'
+            )
 
             expect(template).toBe('__{0}__ at __{1}__')
             expect(dictionary).toEqual({
                 '__{0}__': '{{name}}',
-                '__{1}__': 'https://example.com'
+                '__{1}__': 'https://example.com',
             })
         })
 
         it('strips trailing punctuation from URLs within the template extraction', () => {
-            const { template, dictionary } = extractToTemplate('see https://example.com.')
+            const { template, dictionary } = extractToTemplate(
+                'see https://example.com.'
+            )
 
             expect(template).toBe('see __{0}__.')
             expect(dictionary).toEqual({
-                '__{0}__': 'https://example.com'
+                '__{0}__': 'https://example.com',
             })
         })
 
         it('strips trailing comma from URLs within the template extraction', () => {
-            const { template, dictionary } = extractToTemplate('visit https://example.com, ok')
+            const { template, dictionary } = extractToTemplate(
+                'visit https://example.com, ok'
+            )
 
             expect(template).toBe('visit __{0}__, ok')
             expect(dictionary).toEqual({
-                '__{0}__': 'https://example.com'
+                '__{0}__': 'https://example.com',
             })
         })
 
@@ -60,13 +68,14 @@ describe('placeholders keyed-tokenization', () => {
         })
 
         it('handles multiple {{variable}} tags sequentially', () => {
-            const { template, dictionary } = extractToTemplate('{{a}} {{b}} {{c}}')
+            const { template, dictionary } =
+                extractToTemplate('{{a}} {{b}} {{c}}')
 
             expect(template).toBe('__{0}__ __{1}__ __{2}__')
             expect(dictionary).toEqual({
                 '__{0}__': '{{a}}',
                 '__{1}__': '{{b}}',
-                '__{2}__': '{{c}}'
+                '__{2}__': '{{c}}',
             })
         })
     })
@@ -79,7 +88,10 @@ describe('placeholders keyed-tokenization', () => {
                 return ['Hola']
             })
 
-            const result = await translateWithPreservation('Hello {{name}}', mockTranslateApiCall)
+            const result = await translateWithPreservation(
+                'Hello {{name}}',
+                mockTranslateApiCall
+            )
 
             expect(result).toBe('Hola {{name}}')
             expect(mockTranslateApiCall).toHaveBeenCalledTimes(1)
@@ -92,7 +104,10 @@ describe('placeholders keyed-tokenization', () => {
                 return ['visite']
             })
 
-            const result = await translateWithPreservation('visit https://example.com', mockTranslateApiCall)
+            const result = await translateWithPreservation(
+                'visit https://example.com',
+                mockTranslateApiCall
+            )
 
             expect(result).toBe('visite https://example.com')
         })
@@ -104,7 +119,10 @@ describe('placeholders keyed-tokenization', () => {
                 return ['en']
             })
 
-            const result = await translateWithPreservation('{{name}} at https://example.com', mockTranslateApiCall)
+            const result = await translateWithPreservation(
+                '{{name}} at https://example.com',
+                mockTranslateApiCall
+            )
 
             expect(result).toBe('{{name}} en https://example.com')
         })
@@ -112,7 +130,10 @@ describe('placeholders keyed-tokenization', () => {
         it('skips calling the translation API completely if text is empty or only has placeholders', async () => {
             const mockTranslateApiCall = jest.fn(async () => [])
 
-            const result = await translateWithPreservation('{{name}}', mockTranslateApiCall)
+            const result = await translateWithPreservation(
+                '{{name}}',
+                mockTranslateApiCall
+            )
 
             expect(result).toBe('{{name}}')
             expect(mockTranslateApiCall).not.toHaveBeenCalled()
@@ -126,18 +147,27 @@ describe('placeholders keyed-tokenization', () => {
                 return ['Hola']
             })
 
-            const result = await translateWithPreservation(input, mockTranslateApiCall)
+            const result = await translateWithPreservation(
+                input,
+                mockTranslateApiCall
+            )
 
             expect(result).toBe('\n\nHola\n{{name}}\n\n')
         })
 
         it('is immune to regex injection character bugs like $ and $&', async () => {
-            const mockTranslateApiCall = jest.fn(async (_chunks: string[]) => 
+            const mockTranslateApiCall = jest.fn(async (_chunks: string[]) =>
                 _chunks.map(() => '')
             )
 
-            const result1 = await translateWithPreservation('{{$}}', mockTranslateApiCall)
-            const result2 = await translateWithPreservation('{{$&}}', mockTranslateApiCall)
+            const result1 = await translateWithPreservation(
+                '{{$}}',
+                mockTranslateApiCall
+            )
+            const result2 = await translateWithPreservation(
+                '{{$&}}',
+                mockTranslateApiCall
+            )
 
             expect(result1).toBe('{{$}}')
             expect(result2).toBe('{{$&}}')
@@ -145,11 +175,14 @@ describe('placeholders keyed-tokenization', () => {
     })
 
     it('handles consecutive tags and empty token fallbacks safely', async () => {
-    // Consecutive tags force the string split step to emit an empty slice index
-    const input = '{{a}}{{b}}'
-    const mockTranslateApiCall = jest.fn(async () => [])
+        // Consecutive tags force the string split step to emit an empty slice index
+        const input = '{{a}}{{b}}'
+        const mockTranslateApiCall = jest.fn(async () => [])
 
-    const result = await translateWithPreservation(input, mockTranslateApiCall)
-    expect(result).toBe('{{a}}{{b}}')
-})
+        const result = await translateWithPreservation(
+            input,
+            mockTranslateApiCall
+        )
+        expect(result).toBe('{{a}}{{b}}')
+    })
 })

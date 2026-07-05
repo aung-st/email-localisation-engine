@@ -41,16 +41,16 @@ export function LanguageSelect({
         <fieldset>
             <legend>Language</legend>
             <div className="language-row">
-                    <select
-                        value={targetLanguage}
-                        onChange={(e) => onTargetChange(e.target.value)}
-                    >
-                        {languages.map((language) => (
-                            <option key={language.code} value={language.code}>
-                                {language.label}
-                            </option>
-                        ))}
-                    </select>
+                <select
+                    value={targetLanguage}
+                    onChange={(e) => onTargetChange(e.target.value)}
+                >
+                    {languages.map((language) => (
+                        <option key={language.code} value={language.code}>
+                            {language.label}
+                        </option>
+                    ))}
+                </select>
                 <button type="submit" disabled={loading || !hasText}>
                     {loading ? 'Translating...' : 'Translate'}
                 </button>

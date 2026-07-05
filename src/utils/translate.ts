@@ -19,19 +19,22 @@ export async function translate(
 ): Promise<TranslationResponse> {
     const engine = factory.buildEngine({ engine: 'LibreTranslate', baseUrl })
 
-    const translatedText = await translateWithPreservation(text, async (chunks: string[]) => {
-        // Translate text chunks concurrently
-        const translationPromises = chunks.map((chunk) =>
-            engine.translateText({
-                text: chunk,
-                sourceLanguage,
-                targetLanguage,
-            })
-        )
+    const translatedText = await translateWithPreservation(
+        text,
+        async (chunks: string[]) => {
+            // Translate text chunks concurrently
+            const translationPromises = chunks.map((chunk) =>
+                engine.translateText({
+                    text: chunk,
+                    sourceLanguage,
+                    targetLanguage,
+                })
+            )
 
-        const responses = await Promise.all(translationPromises)
-        return responses.map((res) => res.translatedText)
-    })
+            const responses = await Promise.all(translationPromises)
+            return responses.map((res) => res.translatedText)
+        }
+    )
 
     return {
         translatedText,
