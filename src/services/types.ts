@@ -16,10 +16,3 @@ export interface LocalisationEngineConfig {
   engine: EngineType
 }
 
-export interface EmailContent {
-  text: string
-}
-
-export interface LocalisedEmail {
-  text: string
-}
