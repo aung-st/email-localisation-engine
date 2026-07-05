@@ -1,3 +1,4 @@
+import './App.css'
 import { TranslationForm } from './components/TranslationForm'
 
 function App() {

@@ -7,13 +7,10 @@ interface TranslationResultProps {
 }
 
 export function TranslationResult({ result, error }: TranslationResultProps) {
-    return error ? (
+    return (
         <section>
-            <p role="alert">{error}</p>
+            {error && <p role="alert">{error}</p>}
+            <EmailPreview translatedText={result?.translatedText ?? ''} />
         </section>
-    ) : result ? (
-        <section>
-            <EmailPreview translatedText={result.translatedText} />
-        </section>
-    ) : null
+    )
 }

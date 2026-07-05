@@ -21,7 +21,7 @@ export function TextInput({ text, onTextChange, onFileError }: TextInputProps) {
     }
 
     return (
-        <fieldset>
+        <fieldset className="source-fieldset">
             <legend>Source text</legend>
             <input
                 type="file"
@@ -37,7 +37,6 @@ export function TextInput({ text, onTextChange, onFileError }: TextInputProps) {
                 value={text}
                 onChange={(e) => onTextChange(e.target.value)}
                 placeholder="paste text here"
-                rows={20}
             />
         </fieldset>
     )

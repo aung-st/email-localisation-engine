@@ -24,36 +24,38 @@ export function LanguageSelect({
     return (
         <fieldset>
             <legend>Language</legend>
-            <label>
-                From
-                <select
-                    value={sourceLanguage}
-                    onChange={(e) => onSourceChange(e.target.value)}
-                >
-                    {languages.map((language) => (
-                        <option key={language.code} value={language.code}>
-                            {language.label}
-                        </option>
-                    ))}
-                </select>
-            </label>
-            →
-            <label>
-                To
-                <select
-                    value={targetLanguage}
-                    onChange={(e) => onTargetChange(e.target.value)}
-                >
-                    {languages.map((language) => (
-                        <option key={language.code} value={language.code}>
-                            {language.label}
-                        </option>
-                    ))}
-                </select>
-            </label>
-            <button type="submit" disabled={loading || !hasText}>
-                {loading ? 'Translating...' : 'Translate'}
-            </button>
+            <div className="language-row">
+                <label>
+                    From
+                    <select
+                        value={sourceLanguage}
+                        onChange={(e) => onSourceChange(e.target.value)}
+                    >
+                        {languages.map((language) => (
+                            <option key={language.code} value={language.code}>
+                                {language.label}
+                            </option>
+                        ))}
+                    </select>
+                </label>
+                <span className="arrow">→</span>
+                <label>
+                    To
+                    <select
+                        value={targetLanguage}
+                        onChange={(e) => onTargetChange(e.target.value)}
+                    >
+                        {languages.map((language) => (
+                            <option key={language.code} value={language.code}>
+                                {language.label}
+                            </option>
+                        ))}
+                    </select>
+                </label>
+                <button type="submit" disabled={loading || !hasText}>
+                    {loading ? 'Translating...' : 'Translate'}
+                </button>
+            </div>
         </fieldset>
     )
 }

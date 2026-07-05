@@ -37,23 +37,28 @@ export function TranslationForm() {
         <>
             <form onSubmit={handleTranslate}>
                 <h1>Email Localisation Tool</h1>
-                <TextInput
-                    text={text}
-                    onTextChange={setText}
-                    onFileError={setError}
-                />
 
-                <LanguageSelect
-                    sourceLanguage={sourceLanguage}
-                    targetLanguage={targetLanguage}
-                    onSourceChange={setSourceLanguage}
-                    onTargetChange={setTargetLanguage}
-                    loading={loading}
-                    hasText={text.length > 0}
-                />
+                <div className="source-preview-row">
+                    <div className="source-column">
+                        <TextInput
+                            text={text}
+                            onTextChange={setText}
+                            onFileError={setError}
+                        />
+
+                        <LanguageSelect
+                            sourceLanguage={sourceLanguage}
+                            targetLanguage={targetLanguage}
+                            onSourceChange={setSourceLanguage}
+                            onTargetChange={setTargetLanguage}
+                            loading={loading}
+                            hasText={text.length > 0}
+                        />
+                    </div>
+
+                    <TranslationResult result={result} error={error} />
+                </div>
             </form>
-
-            <TranslationResult result={result} error={error} />
         </>
     )
 }

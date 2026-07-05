@@ -12,10 +12,14 @@ export function EmailPreview({ translatedText }: EmailPreviewProps) {
     const renderedTemplate = emailTemplate(translatedText)
 
     return (
-        <section>
-            <h2>Translation Preview</h2>
-            <p className="translated-text">{translatedText}</p>
-            <button type="button" onClick={() => setModalOpen(true)}>
+        <div className="preview-panel">
+            <div className="preview-legend">Translation Preview</div>
+            <div className="translated-text">{translatedText}</div>
+            <button
+                type="button"
+                onClick={() => setModalOpen(true)}
+                disabled={!translatedText.trim()}
+            >
                 Preview Email
             </button>
 
@@ -36,6 +40,6 @@ export function EmailPreview({ translatedText }: EmailPreviewProps) {
                     />
                 </Modal>
             )}
-        </section>
+        </div>
     )
 }
