@@ -10,24 +10,25 @@ import { post } from '../../utils/apiClient'
 
 const baseUrl = process.env.BASE_URL as string
 
-let mockFetch: ReturnType<typeof jest.fn>
+let mockFetch: jest.SpiedFunction<typeof globalThis.fetch>
 
 beforeEach(() => {
-    mockFetch = jest.fn<any>()
-    globalThis.fetch = mockFetch
+    mockFetch = jest
+        .spyOn(globalThis, 'fetch')
+        .mockImplementation(jest.fn<typeof globalThis.fetch>())
 })
 
 afterEach(() => {
-    delete (globalThis as any).fetch
+    mockFetch.mockRestore()
 })
 
 describe('post', () => {
     it('sends a POST request with JSON body and returns parsed response', async () => {
-        mockFetch.mockResolvedValue({
-            ok: true,
-            status: 200,
-            json: () => Promise.resolve({ translatedText: 'hola' }),
-        })
+        mockFetch.mockResolvedValue(
+            new Response(JSON.stringify({ translatedText: 'hola' }), {
+                status: 200,
+            })
+        )
 
         const result = await post<{ q: string }, { translatedText: string }>(
             `${baseUrl}/translate`,
@@ -47,11 +48,11 @@ describe('post', () => {
     })
 
     it('includes Authorization header when apiKey is provided', async () => {
-        mockFetch.mockResolvedValue({
-            ok: true,
-            status: 200,
-            json: () => Promise.resolve({ translatedText: 'hola' }),
-        })
+        mockFetch.mockResolvedValue(
+            new Response(JSON.stringify({ translatedText: 'hola' }), {
+                status: 200,
+            })
+        )
 
         await post(`${baseUrl}/translate`, { q: 'hello' }, 'my-api-key')
 
@@ -67,11 +68,11 @@ describe('post', () => {
     })
 
     it('throws when response is not ok', async () => {
-        mockFetch.mockResolvedValue({
-            ok: false,
-            status: 400,
-            json: () => Promise.resolve({ error: 'bad request' }),
-        })
+        mockFetch.mockResolvedValue(
+            new Response(JSON.stringify({ error: 'bad request' }), {
+                status: 400,
+            })
+        )
 
         await expect(
             post(`${baseUrl}/translate`, { q: 'hello' })
