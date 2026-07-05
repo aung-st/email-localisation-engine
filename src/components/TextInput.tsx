@@ -1,4 +1,5 @@
 import '../styles/TextInput.css'
+import { parseFile } from '../utils/fileParser'
 
 interface TextInputProps {
     text: string
@@ -12,7 +13,7 @@ export function TextInput({ text, onTextChange, onFileError }: TextInputProps) {
         if (!file) return
 
         try {
-            const content = await file.text()
+            const content = await parseFile(file)
             onTextChange(content)
         } catch (e) {
             onFileError(String(e))
