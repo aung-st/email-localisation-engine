@@ -1,6 +1,9 @@
 export function extractPlaceholders(
     text: string,
 ): { scrubbed: string; map: Map<string, string> } {
+    // Captures {{variable}} merge tags and https:// URLs so they survive
+    // translation. Each match is replaced with a UUID placeholder, then
+    // restored after the engine translates the scrubbed text.
     const PATTERN = /(\{\{(.+?)\}\})|(https?:\/\/[^\s<>"']+(?<![.,!?;:)\]}>]))/g
     const map = new Map<string, string>()
     const scrubbed = text.replace(PATTERN, (match) => {
