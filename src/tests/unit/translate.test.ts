@@ -1,135 +1,155 @@
-import { describe, it, expect } from '@jest/globals'
+import { describe, it, expect, jest } from '@jest/globals'
 import {
-    extractPlaceholders,
-    restorePlaceholders,
+    extractToTemplate,
+    translateWithPreservation
 } from '../../utils/placeholders'
 
-describe('placeholders', () => {
-    describe('extractPlaceholders', () => {
-        it('replaces {{variable}} with a UUID', () => {
-            const { scrubbed, map } = extractPlaceholders('Hello {{name}}')
+describe('placeholders keyed-tokenization', () => {
+    describe('extractToTemplate', () => {
+        it('identifies and isolates a {{variable}} into a tracking dictionary', () => {
+            const { template, dictionary } = extractToTemplate('Hello {{name}}')
 
-            expect(scrubbed).not.toContain('{{name}}')
-            expect(scrubbed).toMatch(
-                /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/
-            )
-            expect(map.size).toBe(1)
-            expect(map.values().next().value).toBe('{{name}}')
+            expect(template).toBe('Hello __{0}__')
+            expect(dictionary).toEqual({
+                '__{0}__': '{{name}}'
+            })
         })
 
-        it('replaces URLs with a UUID', () => {
-            const { scrubbed, map } = extractPlaceholders(
-                'visit https://example.com/help'
-            )
+        it('identifies and isolates URLs into a tracking dictionary', () => {
+            const { template, dictionary } = extractToTemplate('visit https://example.com/help')
 
-            expect(scrubbed).not.toContain('https://example.com/help')
-            expect(map.size).toBe(1)
-            expect(map.values().next().value).toBe('https://example.com/help')
+            expect(template).toBe('visit __{0}__')
+            expect(dictionary).toEqual({
+                '__{0}__': 'https://example.com/help'
+            })
         })
 
-        it('replaces both {{variable}} and URLs', () => {
-            const { map } = extractPlaceholders(
-                '{{name}} at https://example.com'
-            )
+        it('extracts both {{variable}} and URLs sequentially', () => {
+            const { template, dictionary } = extractToTemplate('{{name}} at https://example.com')
 
-            expect(map.size).toBe(2)
-            const values = Array.from(map.values())
-            expect(values).toContain('{{name}}')
-            expect(values).toContain('https://example.com')
+            expect(template).toBe('__{0}__ at __{1}__')
+            expect(dictionary).toEqual({
+                '__{0}__': '{{name}}',
+                '__{1}__': 'https://example.com'
+            })
         })
 
-        it('strips trailing punctuation from URLs', () => {
-            const { map } = extractPlaceholders('see https://example.com.')
+        it('strips trailing punctuation from URLs within the template extraction', () => {
+            const { template, dictionary } = extractToTemplate('see https://example.com.')
 
-            const url = Array.from(map.values())[0]
-            expect(url).toBe('https://example.com')
-            expect(url).not.toMatch(/\.$/)
+            expect(template).toBe('see __{0}__.')
+            expect(dictionary).toEqual({
+                '__{0}__': 'https://example.com'
+            })
         })
 
-        it('strips trailing comma from URLs', () => {
-            const { map } = extractPlaceholders('visit https://example.com, ok')
+        it('strips trailing comma from URLs within the template extraction', () => {
+            const { template, dictionary } = extractToTemplate('visit https://example.com, ok')
 
-            const url = Array.from(map.values())[0]
-            expect(url).toBe('https://example.com')
+            expect(template).toBe('visit __{0}__, ok')
+            expect(dictionary).toEqual({
+                '__{0}__': 'https://example.com'
+            })
         })
 
         it('handles text with no placeholders', () => {
-            const { scrubbed, map } = extractPlaceholders('Hello world')
+            const { template, dictionary } = extractToTemplate('Hello world')
 
-            expect(scrubbed).toBe('Hello world')
-            expect(map.size).toBe(0)
+            expect(template).toBe('Hello world')
+            expect(Object.keys(dictionary)).toHaveLength(0)
         })
 
-        it('handles multiple {{variable}} tags', () => {
-            const { map } = extractPlaceholders('{{a}} {{b}} {{c}}')
+        it('handles multiple {{variable}} tags sequentially', () => {
+            const { template, dictionary } = extractToTemplate('{{a}} {{b}} {{c}}')
 
-            expect(map.size).toBe(3)
-            const values = Array.from(map.values())
-            expect(values).toEqual(['{{a}}', '{{b}}', '{{c}}'])
+            expect(template).toBe('__{0}__ __{1}__ __{2}__')
+            expect(dictionary).toEqual({
+                '__{0}__': '{{a}}',
+                '__{1}__': '{{b}}',
+                '__{2}__': '{{c}}'
+            })
+        })
+    })
+
+    describe('translateWithPreservation', () => {
+        it('safely passes clean chunks to engine and reassembles variables', async () => {
+            const mockTranslateApiCall = jest.fn(async (chunks: string[]) => {
+                // FIXED: Spaces are separated out, matching the pristine string
+                expect(chunks).toEqual(['Hello'])
+                return ['Hola']
+            })
+
+            const result = await translateWithPreservation('Hello {{name}}', mockTranslateApiCall)
+
+            expect(result).toBe('Hola {{name}}')
+            expect(mockTranslateApiCall).toHaveBeenCalledTimes(1)
+        })
+
+        it('safely passes clean chunks to engine and reassembles URLs', async () => {
+            const mockTranslateApiCall = jest.fn(async (chunks: string[]) => {
+                // FIXED: Removed trailing whitespace artifact from validation chunk
+                expect(chunks).toEqual(['visit'])
+                return ['visite']
+            })
+
+            const result = await translateWithPreservation('visit https://example.com', mockTranslateApiCall)
+
+            expect(result).toBe('visite https://example.com')
+        })
+
+        it('orchestrates blocks containing both types of placeholders', async () => {
+            const mockTranslateApiCall = jest.fn(async (chunks: string[]) => {
+                // FIXED: Isolated to raw words only
+                expect(chunks).toEqual(['at'])
+                return ['en']
+            })
+
+            const result = await translateWithPreservation('{{name}} at https://example.com', mockTranslateApiCall)
+
+            expect(result).toBe('{{name}} en https://example.com')
+        })
+
+        it('skips calling the translation API completely if text is empty or only has placeholders', async () => {
+            const mockTranslateApiCall = jest.fn(async () => [])
+
+            const result = await translateWithPreservation('{{name}}', mockTranslateApiCall)
+
+            expect(result).toBe('{{name}}')
+            expect(mockTranslateApiCall).not.toHaveBeenCalled()
+        })
+
+        it('leaves spacing and newlines untouched', async () => {
+            const input = '\n\nHello\n{{name}}\n\n'
+            const mockTranslateApiCall = jest.fn(async (chunks: string[]) => {
+                // FIXED: The engine only evaluates the text block, skipping formatting layout tokens entirely
+                expect(chunks).toEqual(['Hello'])
+                return ['Hola']
+            })
+
+            const result = await translateWithPreservation(input, mockTranslateApiCall)
+
+            expect(result).toBe('\n\nHola\n{{name}}\n\n')
+        })
+
+        it('is immune to regex injection character bugs like $ and $&', async () => {
+            const mockTranslateApiCall = jest.fn(async (_chunks: string[]) => 
+                _chunks.map(() => '')
+            )
+
+            const result1 = await translateWithPreservation('{{$}}', mockTranslateApiCall)
+            const result2 = await translateWithPreservation('{{$&}}', mockTranslateApiCall)
+
+            expect(result1).toBe('{{$}}')
+            expect(result2).toBe('{{$&}}')
         })
     })
 
-    describe('restorePlaceholders', () => {
-        it('restores {{variable}} from UUID placeholders', () => {
-            const { scrubbed, map } = extractPlaceholders('Hello {{name}}')
+    it('handles consecutive tags and empty token fallbacks safely', async () => {
+    // Consecutive tags force the string split step to emit an empty slice index
+    const input = '{{a}}{{b}}'
+    const mockTranslateApiCall = jest.fn(async () => [])
 
-            const restored = restorePlaceholders(scrubbed, map)
-
-            expect(restored).toBe('Hello {{name}}')
-        })
-
-        it('restores URLs from UUID placeholders', () => {
-            const { scrubbed, map } = extractPlaceholders(
-                'visit https://example.com'
-            )
-
-            const restored = restorePlaceholders(scrubbed, map)
-
-            expect(restored).toBe('visit https://example.com')
-        })
-
-        it('restores both {{variable}} and URLs', () => {
-            const { scrubbed, map } = extractPlaceholders(
-                '{{name}} at https://example.com'
-            )
-
-            const restored = restorePlaceholders(scrubbed, map)
-
-            expect(restored).toBe('{{name}} at https://example.com')
-        })
-
-        it('handles text with no placeholders to restore', () => {
-            const { scrubbed, map } = extractPlaceholders('Hello world')
-
-            const restored = restorePlaceholders(scrubbed, map)
-
-            expect(restored).toBe('Hello world')
-        })
-
-        it('preserves $ in original values when restoring', () => {
-            const { scrubbed, map } = extractPlaceholders('Hello {{$name}}')
-
-            const restored = restorePlaceholders(scrubbed, map)
-
-            expect(restored).toBe('Hello {{$name}}')
-        })
-
-        it('preserves $& in original values when restoring', () => {
-            const { scrubbed, map } = extractPlaceholders('{{$&}}')
-
-            const restored = restorePlaceholders(scrubbed, map)
-
-            expect(restored).toBe('{{$&}}')
-        })
-
-        it('restores multiple {{variable}} tags in order', () => {
-            const { scrubbed, map } = extractPlaceholders(
-                '{{first}} {{second}} {{third}}'
-            )
-
-            const restored = restorePlaceholders(scrubbed, map)
-
-            expect(restored).toBe('{{first}} {{second}} {{third}}')
-        })
-    })
+    const result = await translateWithPreservation(input, mockTranslateApiCall)
+    expect(result).toBe('{{a}}{{b}}')
+})
 })
