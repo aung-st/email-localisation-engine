@@ -1,0 +1,14 @@
+.translated-text {
+  white-space: pre-wrap;
+}
+
+.modal-actions {
+  text-align: right;
+  margin-bottom: 8px;
+}
+
+.preview-frame {
+  width: 100%;
+  height: 80vh;
+  border: none;
+}
