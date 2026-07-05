@@ -1,9 +1,15 @@
+/**
+ * React component for displaying translation previews and email templates
+ * Shows the translated text and provides a modal to preview the full email
+ * @param translatedText - The translated text to display and preview
+ */
 import { useState } from 'react'
 import { Modal } from './Modal'
 import { emailTemplate } from '../utils/emailTemplate'
 import '../styles/EmailPreview.css'
 
 interface EmailPreviewProps {
+    /** The translated text to display and use in the email template */
     translatedText: string
 }
 

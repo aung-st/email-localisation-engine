@@ -1,3 +1,9 @@
+/**
+ * Props interface for the TranslationForm component
+ * Core form component for translating text between languages
+ * Manages state for text input, source/target language selection, translation results, and loading/error states
+ * Integrates all sub-components to provide a complete translation workflow
+ */
 import { useState } from 'react'
 import type { TranslationResponse } from '../services/types'
 import { translate } from '../utils/translate'

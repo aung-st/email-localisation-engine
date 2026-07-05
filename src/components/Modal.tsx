@@ -1,8 +1,16 @@
+/**
+ * React component for modal dialogs
+ * Handles click and escape key events to open and close the modal
+ * @param onClose - Callback function triggered to close the modal
+ * @param children - Content to display inside the modal
+ */
 import { useEffect, type ReactNode } from 'react'
 import '../styles/Modal.css'
 
 interface ModalProps {
+    /** Callback function triggered to close the modal */
     onClose: () => void
+    /** Content to display inside the modal */
     children: ReactNode
 }
 

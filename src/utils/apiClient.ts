@@ -1,8 +1,18 @@
 export interface ApiResponse<T> {
+    /** Response data of type T */
     data: T
+    /** HTTP status code */
     status: number
 }
 
+/**
+ * Makes a POST request to the specified URL with JSON body
+ * @param url - Target URL for the request
+ * @param body - Request body payload
+ * @param apiKey - Optional API key for authentication
+ * @returns Promise resolving to ApiResponse with parsed data and status
+ * @throws Error if response status indicates failure
+ */
 export async function post<TBody, TResponse>(
     url: string,
     body: TBody,

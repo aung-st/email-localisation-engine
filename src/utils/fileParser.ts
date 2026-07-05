@@ -1,5 +1,10 @@
 import mammoth from 'mammoth'
 
+/**
+ * Recursively extracts all string values from an object/array structure
+ * @param value - Any value (string, array, object, null, etc.)
+ * @param acc - Accumulator array to collect strings into
+ */
 function collectStrings(value: unknown, acc: string[]): void {
     if (typeof value === 'string') {
         acc.push(value)
@@ -14,6 +19,11 @@ function collectStrings(value: unknown, acc: string[]): void {
     }
 }
 
+/**
+ * Parses CSV content and extracts text by combining fields after the first column
+ * @param raw - Raw CSV string content
+ * @returns Combined text with fields separated by ' | '
+ */
 function parseCsv(raw: string): string {
     const normalised = raw.replace(/\r\n/g, '\n')
     const rows: string[][] = []
@@ -50,6 +60,12 @@ function parseCsv(raw: string): string {
         .join('\n')
 }
 
+/**
+ * Parses uploaded files based on their extension and returns text content
+ * @param file - File object to parse
+ * @returns Promise resolving to the extracted text content
+ * @throws Error if file has no extension or unsupported file type
+ */
 export async function parseFile(file: File): Promise<string> {
     const parts = file.name.split('.')
     if (parts.length < 2) throw new Error('File has no extension')
