@@ -1,73 +1,56 @@
-# React + TypeScript + Vite
+# Email Localisation Engine
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A React app that translates email content via LibreTranslate, with placeholder preservation and an inline email preview.
 
-Currently, two official plugins are available:
+## How to run
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-    globalIgnores(['dist']),
-    {
-        files: ['**/*.{ts,tsx}'],
-        extends: [
-            // Other configs...
-
-            // Remove tseslint.configs.recommended and replace with this
-            tseslint.configs.recommendedTypeChecked,
-            // Alternatively, use this for stricter rules
-            tseslint.configs.strictTypeChecked,
-            // Optionally, add this for stylistic rules
-            tseslint.configs.stylisticTypeChecked,
-
-            // Other configs...
-        ],
-        languageOptions: {
-            parserOptions: {
-                project: ['./tsconfig.node.json', './tsconfig.app.json'],
-                tsconfigRootDir: import.meta.dirname,
-            },
-            // other options...
-        },
-    },
-])
+```bash
+npm install
+npm run dev       # Dev server at http://localhost:5173
+npm run build     # Production build to dist/
+npm run preview   # Preview the production build
+npm test          # Run tests (Jest)
+npm run lint      # ESLint
+npm run format    # Prettier
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Requires a running [LibreTranslate](https://libretranslate.com/) instance. Set `VITE_BASE_URL` in `.env` to point at it
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Technologies
 
-export default defineConfig([
-    globalIgnores(['dist']),
-    {
-        files: ['**/*.{ts,tsx}'],
-        extends: [
-            // Other configs...
-            // Enable lint rules for React
-            reactX.configs['recommended-typescript'],
-            // Enable lint rules for React DOM
-            reactDom.configs.recommended,
-        ],
-        languageOptions: {
-            parserOptions: {
-                project: ['./tsconfig.node.json', './tsconfig.app.json'],
-                tsconfigRootDir: import.meta.dirname,
-            },
-            // other options...
-        },
-    },
-])
-```
+| Library           | Purpose                  |
+| ----------------- | ------------------------ |
+| React 19          | UI framework             |
+| TypeScript 6      | Type safety              |
+| Vite 8            | Build tool / dev server  |
+| Jest + ts-jest    | Unit & integration tests |
+| ESLint + Prettier | Linting & formatting     |
+| mammoth           | DOCX → text extraction   |
+| LibreTranslate    | Translation engine       |
+
+## Assumptions
+
+- The scope of the project was to translate email bodies and have it inserted into the html email template
+- LibreTranslate server is running and reachable at the configured `VITE_BASE_URL`
+- CSV files use a section-key first column with content in remaining columns
+- Placeholder patterns to preserve: `{{variable}}` merge tags and `https://` URLs
+- The email template can be styled slightly
+- Single-column CSVs produce no output — the parser expects `section,content` pairs
+
+## AI tools used
+
+Development assisted by [opencode](https://opencode.ai) for tasks such as layout changes, generating test cases, and drafting the initial factory pattern.
+
+[Gemini](https://gemini.google.com) for rubber duck debugging.
+## What could be improved with more time
+
+- **Other localisation engines** — the factory pattern supports it; only needs a `DeepLTranslateEngine` and `DeepLTranslateFactory` for example
+- **More file formats** — support for XLSX, HTML email imports
+- **Email template customisation** — let users edit template variables in the UI
+- **UI internationalisation** — the tool localises emails but the interface itself is English-only
+- **CTA layout and length validation** — Implement safeguards to prevent HTML button layouts from breaking or truncating when localisation or variable insertion dynamically alters Call-to-Action text length.
+
+And more.
+
+## My thought process
+[View the process documentation](docs/process.md)
